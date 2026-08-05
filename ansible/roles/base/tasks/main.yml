@@ -13,6 +13,7 @@
     name: systemd-timesyncd
     enabled: true
     state: started
+  when: systemd_running
 
 - name: ensure locale uncommented in /etc/locale.gen
   ansible.builtin.lineinfile:

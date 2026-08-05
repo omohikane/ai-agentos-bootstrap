@@ -7,6 +7,16 @@
   vars_files:
     - vars/main.yml
 
+  pre_tasks:
+    - name: detect whether systemd is PID 1 (false inside containers)
+      ansible.builtin.stat:
+        path: /run/systemd/system
+      register: systemd_system_dir
+
+    - name: set systemd_running fact
+      ansible.builtin.set_fact:
+        systemd_running: "{{ ansible_facts.service_mgr == 'systemd' and systemd_system_dir.stat.exists }}"
+
   roles:
     - role: base
     - role: tools

@@ -2,12 +2,19 @@
 # tool-opencode - install opencode CLI and render its config.
 # opencode is a Node CLI; npm is available through the fnm-managed LTS Node
 # (installed by bootstrap.sh). Installed as the login user.
+- name: check opencode availability
+  ansible.builtin.command: bash -lc 'eval "$(fnm env --shell bash)" && command -v opencode'
+  become: true
+  become_user: "{{ agent_user }}"
+  register: oc_check
+  changed_when: false
+  failed_when: false
+
 - name: install opencode via npm
   ansible.builtin.command: bash -lc 'eval "$(fnm env --shell bash)" && npm install -g opencode-ai'
   become: true
   become_user: "{{ agent_user }}"
-  register: oc_install
-  changed_when: oc_install.rc == 0
+  when: oc_check.rc != 0
 
 - name: ensure opencode config directory
   ansible.builtin.file:

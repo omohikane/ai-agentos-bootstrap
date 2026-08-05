@@ -1,12 +1,19 @@
 ---
 # tool-codex - install the OpenAI codex CLI and render its config.
 # codex is a Node CLI; installed via npm as the login user.
+- name: check codex availability
+  ansible.builtin.command: bash -lc 'eval "$(fnm env --shell bash)" && command -v codex'
+  become: true
+  become_user: "{{ agent_user }}"
+  register: codex_check
+  changed_when: false
+  failed_when: false
+
 - name: install codex via npm
   ansible.builtin.command: bash -lc 'eval "$(fnm env --shell bash)" && npm install -g @openai/codex'
   become: true
   become_user: "{{ agent_user }}"
-  register: codex_install
-  changed_when: codex_install.rc == 0
+  when: codex_check.rc != 0
 
 - name: ensure codex config directory
   ansible.builtin.file:

@@ -13,7 +13,7 @@ lang: en_US.UTF-8
 # Real login user (the user that becomes root via passwordless sudo).
 # Override with: ansible-playbook ... --extra-vars agent_user=myuser
 agent_user: "{{ ansible_env.SUDO_USER | default('ai') }}"
-agent_home: "/home/{{ agent_user }}"
+agent_home: "{{ '/root' if agent_user == 'root' else '/home/' ~ agent_user }}"
 
 # Per-agent config templates live under this directory (relative to playbook)
 ai_config_dir: "{{ playbook_dir }}/config"

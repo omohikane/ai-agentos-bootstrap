@@ -11,6 +11,7 @@ set -euo pipefail
 #   - python     ... runtime (uv manages project pythons)
 #   - uv         ... fast Python package/version manager
 #   - rustup     ... Rust toolchain manager (modern tools, build deps)
+#   - openssh    ... key-only SSH access to the VM
 #   - fnm        ... Node version manager (installs LTS Node)
 #   - yay        ... AUR helper (built from source, idempotent)
 #
@@ -28,6 +29,9 @@ fi
 pacman_install() {
   "${SUDO[@]}" pacman -S --needed --noconfirm "$@"
 }
+
+log "install core packages"
+pacman_install git base-devel ripgrep ansible python uv rustup openssh
 
 install_yay() {
   if command -v yay >/dev/null 2>&1; then
