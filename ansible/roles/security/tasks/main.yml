@@ -1,0 +1,6 @@
+---
+# security role - セキュリティ強化
+# 実装予定 (M3): ssh 設定 / sudo 制限 / 不要サービス停止 など
+- name: security role not yet implemented
+  ansible.builtin.debug:
+    msg: "TODO(M3): security role"

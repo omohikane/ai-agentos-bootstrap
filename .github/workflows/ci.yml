@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck bootstrap/bootstrap.sh cloud-init/build-image.sh
+
+      - name: ansible syntax check
+        run: |
+          python3 -m pip install --quiet ansible-core
+          ansible-playbook --syntax-check -i 'localhost,' ansible/site.yml
+
+      # TODO(M4): VM 生成 → bootstrap → ansible 冪等・再現性検証

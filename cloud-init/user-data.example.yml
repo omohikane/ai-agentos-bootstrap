@@ -1,0 +1,29 @@
+#cloud-config
+# 最小限の user-data 例
+# 利用者は CHANGE_ME_* の部分を書き換えるだけで使えます。
+# パスワードハッシュの生成例: openssl passwd -6
+
+users:
+  - name: CHANGE_ME_USERNAME
+    groups: [wheel]
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    passwd: CHANGE_ME_HASHED_PASSWORD
+    lock_passwd: false
+
+chpasswd:
+  users:
+    - name: CHANGE_ME_USERNAME
+      password: CHANGE_ME_PASSWORD
+      type: text
+
+ssh_pwauth: true
+
+package_update: true
+packages:
+  - git
+
+runcmd:
+  # TODO: リポジトリ名が確定したら raw URL を設定して有効化する
+  # - curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/main/bootstrap/bootstrap.sh | bash
+  - echo "bootstrap.sh acquisition is not configured yet (repo name TBD)"

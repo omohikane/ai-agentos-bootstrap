@@ -1,0 +1,12 @@
+# ansible/vars/tools.list
+# 一般ツールのリスト。1 行 1 パッケージ。'#' で始まる行はコメント。
+# このファイルを編集するのがユーザーの主な作業の 1 つです。
+# 導入は pacman 経由で行われます (AUR のみのパッケージは M3 で yay 対応)。
+
+git
+ripgrep
+tmux
+neovim
+jq
+htop
+docker

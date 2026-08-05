@@ -1,0 +1,7 @@
+# ansible/vars/ai-tools.list
+# AI agent ツールの選択リスト。'#' で始まる行はコメント (無効)。
+# コメントを外すとそのツールが導入され、専用 config が配置されます (M3 実装予定)。
+
+opencode
+# goose
+# codex

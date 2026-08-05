@@ -1,0 +1,17 @@
+---
+# ai role - AI agent tools を vars/ai-tools.list から導入し、専用 config を配置する
+# 選択可能なツール: opencode / goose / codex など
+# config は ansible/config/<tool>/ を ~/.config/<tool>/ へ同期する予定。
+
+- name: read ai-tools.list
+  ansible.builtin.set_fact:
+    ai_tools: >-
+      {{ lookup('file', playbook_dir ~ '/vars/ai-tools.list').splitlines()
+         | select('match', '^\s*[^#]')
+         | list }}
+
+- name: show selected ai tools
+  ansible.builtin.debug:
+    var: ai_tools
+
+# TODO(M3): 各ツールの導入 + config 配置 (ansible/config/<tool>/ の同期)

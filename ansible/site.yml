@@ -1,0 +1,12 @@
+---
+- name: self-apply bootstrap configuration
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: base
+    - role: tools
+    - role: ai
+    - role: security

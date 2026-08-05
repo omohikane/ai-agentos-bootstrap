@@ -1,0 +1,6 @@
+---
+# base role - 基本設定 (hostname / user / ssh / tz / locale)
+# 実装予定 (M3)
+- name: base role not yet implemented
+  ansible.builtin.debug:
+    msg: "TODO(M3): base role"

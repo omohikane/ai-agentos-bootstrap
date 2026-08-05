@@ -1,0 +1,18 @@
+---
+# tools role - 一般ツールを vars/tools.list から pacman で導入する
+# tools.list はユーザーが編集する主なファイルの 1 つ。
+
+- name: read tools.list
+  ansible.builtin.set_fact:
+    tools_list: >-
+      {{ lookup('file', playbook_dir ~ '/vars/tools.list').splitlines()
+         | select('match', '^\s*[^#]')
+         | list }}
+
+- name: install tools (pacman)
+  ansible.builtin.pacman:
+    name: "{{ tools_list }}"
+    state: present
+
+# TODO(M3): pacman に存在しない AUR パッケージの yay による導入に分割する
+# TODO(M3): インストール後の設定 (dotfiles / service) を実装
