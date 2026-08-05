@@ -13,6 +13,20 @@
   ansible.builtin.debug:
     var: ai_tools
 
+# --- agent runtime plumbing (independent of which tools are selected) -------
+- name: install run-agent entry point
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../scripts/run-agent.sh"
+    dest: /usr/local/bin/run-agent
+    mode: "0755"
+
+- name: render ai-agent systemd unit
+  ansible.builtin.template:
+    src: ai-agent.service.j2
+    dest: /etc/systemd/system/ai-agent.service
+  when: systemd_running
+
+# --- per-tool install + config ---------------------------------------------
 - name: install and configure selected tools
   ansible.builtin.include_tasks: "tool-{{ item }}.yml"
   loop: "{{ ai_tools }}"

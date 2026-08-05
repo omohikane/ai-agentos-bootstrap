@@ -1,0 +1,14 @@
+[Unit]
+Description=AI agent autonomous run (reads prompt from agent-task.txt)
+After=network-online.target
+
+[Service]
+User={{ agent_user }}
+Group={{ agent_user }}
+WorkingDirectory={{ agent_home }}
+Environment=HOME={{ agent_home }}
+ExecStart=/bin/bash -c '/usr/local/bin/run-agent {{ ai_agent_default }} "$(cat {{ project_dir }}/agent-task.txt)"'
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

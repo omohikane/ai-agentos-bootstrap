@@ -18,5 +18,8 @@ agent_home: "{{ '/root' if agent_user == 'root' else '/home/' ~ agent_user }}"
 # Per-agent config templates live under this directory (relative to playbook)
 ai_config_dir: "{{ playbook_dir }}/config"
 
+# Default agent used by the ai-agent systemd service (Phase 2)
+ai_agent_default: opencode
+
 # Project checkout location on the VM
 project_dir: /opt/ai-agentos-bootstrap

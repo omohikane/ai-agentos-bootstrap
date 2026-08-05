@@ -45,17 +45,23 @@ template, installs a minimal core toolchain with `bootstrap.sh`, then applies
 
 ## Quickstart
 
-(Work in progress: `cloud-init/build-image.sh` is implemented in M1; this section
-will be completed then.)
+1. Build the template on an Arch host: `sudo ./cloud-init/build-image.sh`
+2. Import the qcow2 into Proxmox / KVM and attach `cloud-init/user-data.example.yml`
+   (username, SSH key, `.env`) + `cloud-init/meta-data.example.yml`.
+3. Start the VM. First boot runs cloud-init → `bootstrap.sh` → `make provision`.
+4. Log in with the SSH key and run an agent, e.g.:
+   `run-agent opencode --auto "your task"` (or `systemctl start ai-agent`).
+
+See `docs/usage.md` and `docs/rebuild.md` for details.
 
 ## Status
 
 - [x] M0 skeleton (repository layout)
+- [x] M1 cloud-init template build script
 - [x] M2 bootstrap.sh (core toolchain + version managers)
-- [ ] M1 cloud-init template build script
-- [ ] M3 Ansible self-apply
-- [ ] M4 CI reproducibility checks
-- [ ] M5 AI autonomous execution environment (Phase 2)
+- [x] M3 Ansible self-apply
+- [x] M4 CI reproducibility checks
+- [x] M5 AI autonomous execution environment (Phase 2)
 
 ## License
 
