@@ -1,15 +1,38 @@
 #cloud-config
-# 最小限の user-data 例
-# 利用者は CHANGE_ME_* の部分を書き換えるだけで使えます。
-# パスワードハッシュの生成例: openssl passwd -6
+# user-data example for the ai-agent VM template.
+#
+# Set these fields, then apply as cloud-init user-data in Proxmox / KVM:
+#   - CHANGE_ME_USERNAME        ... login user
+#   - CHANGE_ME_PUBKEY          ... SSH public key (key-only login, passwords off)
+#   - REPO_URL                  ... this repository (A1: change in ONE place)
+#   - .env contents             ... secrets, short-lived tokens (see ansible/secrets.env.example)
+#
+# First boot: creates the user, injects .env, clones the repo, runs
+# bootstrap.sh then make provision — ends in an agent-ready state.
+
+# --- Repository (single place to change when the repo is renamed) ----------
+write_files:
+  - path: /opt/ai-agentos-bootstrap-url
+    content: |
+      https://github.com/<owner>/<repo>.git
+    permissions: "0644"
+
+# --- Secrets injected into the VM (short-lived tokens only) ----------------
+  - path: /home/CHANGE_ME_USERNAME/.env
+    owner: "CHANGE_ME_USERNAME:CHANGE_ME_USERNAME"
+    permissions: "0600"
+    content: |
+      # fill from ansible/secrets.env.example (short-lived tokens only)
+      # ANTHROPIC_API_KEY=
+      # OPENAI_API_KEY=
 
 users:
   - name: CHANGE_ME_USERNAME
     groups: [wheel]
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    passwd: CHANGE_ME_HASHED_PASSWORD
-    lock_passwd: false
+    ssh_authorized_keys:
+      - CHANGE_ME_PUBKEY
 
 chpasswd:
   users:
@@ -23,7 +46,8 @@ package_update: true
 packages:
   - git
 
+# --- Automatic first-boot provisioning -------------------------------------
 runcmd:
-  # TODO: リポジトリ名が確定したら raw URL を設定して有効化する
-  # - curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/main/bootstrap/bootstrap.sh | bash
-  - echo "bootstrap.sh acquisition is not configured yet (repo name TBD)"
+  - git clone --depth 1 "$(cat /opt/ai-agentos-bootstrap-url)" /opt/ai-agentos-bootstrap
+  - chown -R CHANGE_ME_USERNAME:CHANGE_ME_USERNAME /opt/ai-agentos-bootstrap
+  - su - CHANGE_ME_USERNAME -c 'cd /opt/ai-agentos-bootstrap && make bootstrap && make provision'
