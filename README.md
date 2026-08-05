@@ -1,55 +1,62 @@
 # ai-agentos-bootstrap
 
-> 仮称です。リポジトリ名は今後変更される可能性があります。
+> Working title. The repository name may change before the first public release.
 
-AI agent 専用 VM を構築するための OSS ブートストラップ基盤です。
+An open-source bootstrap kit for building **AI-agent-ready VMs**.
 
-通常の KVM / Proxmox / Hyper-V 上の **Arch Linux** に cloud-init テンプレートから起動し、
-`bootstrap.sh` で最小ツール群を導入、その後 **Ansible を自分自身 (localhost) に適用**して
-パッケージ・ツールの自動導入と設定を行います。
+It boots a **vanilla Arch Linux** VM (KVM / Proxmox / Hyper-V) from a cloud-init
+template, installs a minimal core toolchain with `bootstrap.sh`, then applies
+**Ansible to localhost (self-apply)** to provision packages and configuration.
 
-## コンセプト
+## Concept
 
-- **バニラ = cloud-init テンプレート**: username / password だけ投入して起動・ログインできる状態にします
-- **bootstrap.sh**: `git` / `base-devel`(ビルド用) / `ripgrep` / `ansible` + `yay` を導入するシンプルな固定ステップ
-- **Ansible self-apply**: ログイン後に自分の環境へ適用。パッケージ導入・設定を自動化します
-- **ユーザーの主な作業は 2 ファイルの編集だけ**:
-  - `ansible/vars/tools.list` … 一般ツール
-  - `ansible/vars/ai-tools.list` … AI agent ツール (opencode / goose / codex など)
+- **Vanilla layer = cloud-init template**: only a username and SSH key are injected;
+  the VM boots into a login-ready state.
+- **bootstrap.sh**: fixed, minimal core install only — `git`, `base-devel`,
+  `ripgrep`, `ansible`, `python`, `uv`, `rustup`, `fnm` (Node), and `yay`.
+- **Ansible self-apply**: run on first boot (or manually) to provision packages,
+  AI agent tools, dotfiles, and security settings. Idempotent.
+- **The user's main task is editing two files**:
+  - `ansible/vars/tools.list` — general tools (one package per line)
+  - `ansible/vars/ai-tools.list` — AI agent tools to enable (comment toggles)
 
-## 全体フロー
-
-```
-[1] cloud-init テンプレート (qcow2) を Proxmox / KVM に投入
-    → username/password を投入して起動・ログイン可能な状態
-[2] bootstrap.sh: git, base-devel, ripgrep, ansible + yay を導入
-[3] make provision: ansible-playbook を localhost に適用 (base → tools → ai → security)
-[4] (Phase 2) opencode --auto 等で AI が自律的に作業できる環境
-```
-
-## リポジトリ構成
+## Flow
 
 ```
-├── cloud-init/   … qcow2 テンプレ生成 + user-data/meta-data 例
-├── bootstrap/    … バニラへの最小 core 導入 (shellscript)
-├── ansible/      … 設定自動化 (base / tools / ai / security)
-│   └── vars/     … tools.list / ai-tools.list (ユーザー編集ファイル)
-└── docs/         … アーキテクチャ / 使い方
+[1] cloud-init template (qcow2) imported into Proxmox / KVM
+    -> username + SSH key injected, VM boots login-ready
+[2] bootstrap.sh: core toolchain (git, base-devel, ripgrep, ansible,
+    python, uv, rustup, fnm, yay)
+[3] Ansible self-apply (auto on first boot, or manually via make provision):
+    base -> tools -> ai -> security
+[4] (Phase 2) AI agents (opencode / claude code / codex, ...) ready to run
 ```
 
-## クイックスタート
+## Repository layout
 
-(準備中: M1 で `build-image.sh` を実装し、この節を埋めます)
+```
+├── cloud-init/   … qcow2 template build + user-data/meta-data examples
+├── bootstrap/    … minimal core install for vanilla Arch (shell script)
+├── ansible/      … configuration automation (base / tools / ai / security)
+│   ├── vars/     … tools.list / ai-tools.list (user-editable)
+│   └── config/   … per-agent dotfile templates
+└── docs/         … architecture / usage
+```
 
-## ステータス
+## Quickstart
 
-- [x] M0 骨格 (このリポジトリ構成)
-- [ ] M1 cloud-init テンプレ生成スクリプト
-- [ ] M2 bootstrap.sh
+(Work in progress: `cloud-init/build-image.sh` is implemented in M1; this section
+will be completed then.)
+
+## Status
+
+- [x] M0 skeleton (repository layout)
+- [x] M2 bootstrap.sh (core toolchain + version managers)
+- [ ] M1 cloud-init template build script
 - [ ] M3 Ansible self-apply
-- [ ] M4 CI 冪等・再現性検証
-- [ ] M5 AI 自律実行環境 (Phase 2)
+- [ ] M4 CI reproducibility checks
+- [ ] M5 AI autonomous execution environment (Phase 2)
 
-## ライセンス
+## License
 
-(未設定)
+MIT
