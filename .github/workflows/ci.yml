@@ -16,9 +16,43 @@ jobs:
           sudo apt-get install -y shellcheck
           shellcheck bootstrap/bootstrap.sh cloud-init/build-image.sh
 
-      - name: ansible syntax check
+      - name: ansible + yaml syntax check
         run: |
           python3 -m pip install --quiet ansible-core
           ansible-playbook --syntax-check -i 'localhost,' ansible/site.yml
+          for f in $(find ansible -name '*.yml'); do python3 -c "import yaml,sys; yaml.safe_load(open('$f'))"; done
 
-      # TODO(M4): VM 生成 → bootstrap → ansible 冪等・再現性検証
+  test-arch:
+    # Full bootstrap -> provision -> idempotency, in real Arch.
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: update and install helper packages
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel make
+
+      - name: run bootstrap.sh (core toolchain + yay)
+        run: |
+          ./bootstrap/bootstrap.sh
+
+      - name: run provision (first apply)
+        run: |
+          ansible-playbook -i 'localhost,' ansible/site.yml -e agent_user=root
+
+      - name: run provision (second apply, must be idempotent)
+        run: |
+          set -o pipefail
+          ansible-playbook -i 'localhost,' ansible/site.yml -e agent_user=root \
+            > /tmp/second.log 2>&1
+          status=$?
+          if [ $status -eq 0 ] && grep -q 'changed=[0]' /tmp/second.log; then
+            echo "OK: idempotent (no changed tasks on second run)"
+          else
+            echo "FAIL: non-idempotent or failed" >&2
+            cat /tmp/second.log
+            exit 1
+          fi
