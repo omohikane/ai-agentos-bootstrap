@@ -1,6 +1,35 @@
 ---
-# security role - セキュリティ強化
-# 実装予定 (M3): ssh 設定 / sudo 制限 / 不要サービス停止 など
-- name: security role not yet implemented
+# security - pragmatic hardening for a disposable, local VM.
+# SSH key-only login. No firewall hardening, no automatic updates (rebuild the
+# VM instead). Passwordless sudo stays enabled so agents can operate as root.
+- name: disable password authentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+  notify: restart sshd
+
+- name: disable keyboard-interactive (PAM) authentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?KbdInteractiveAuthentication"
+    line: "KbdInteractiveAuthentication no"
+  notify: restart sshd
+
+- name: disable challenge-response authentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ChallengeResponseAuthentication"
+    line: "ChallengeResponseAuthentication no"
+  notify: restart sshd
+
+- name: require ssh keys for root (PermitRootLogin prohibit-password)
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+  notify: restart sshd
+
+- name: restart the agent user's ssh-agent requirement
   ansible.builtin.debug:
-    msg: "TODO(M3): security role"
+    msg: "SSH configuration applied. Provide the public key in user-data (ssh_authorized_keys) before first boot."

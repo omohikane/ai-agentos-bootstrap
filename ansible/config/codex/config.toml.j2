@@ -1,0 +1,7 @@
+# codex config (rendered by the ai role)
+# Model/provider are read from env vars set in ~/.env (injected via cloud-init).
+model_provider = "chatgpt"
+
+[permissions]
+# codex runs autonomously on this disposable VM; allow full tool access.
+allow = ["Bash", "Read", "Write", "WebFetch"]

@@ -1,16 +1,20 @@
 # Makefile - ai-agentos-bootstrap
-# 主な操作:
-#   make build-image   … qcow2 テンプレ生成 (M1 実装予定)
-#   make provision     … Ansible self-apply (ログイン後に実行, M3 実装予定)
-#   make verify        … 冪等・再現性検証 (M4 実装予定)
+# Primary operations:
+#   make build-image   … build the cloud-init qcow2 template (M1)
+#   make bootstrap     … minimal core install on a vanilla Arch VM (M2)
+#   make provision     … Ansible self-apply (auto on first boot, or manual)
+#   make verify        … idempotency / reproducibility checks (M4)
 
-.PHONY: build-image provision verify
+.PHONY: build-image bootstrap provision verify
 
 build-image:
 	./cloud-init/build-image.sh
+
+bootstrap:
+	./bootstrap/bootstrap.sh
 
 provision:
 	ansible-playbook -i 'localhost,' ansible/site.yml
 
 verify:
-	@echo "TODO(M4): CI 冪等・再現性検証"
+	@echo "TODO(M4): CI idempotency / reproducibility checks"

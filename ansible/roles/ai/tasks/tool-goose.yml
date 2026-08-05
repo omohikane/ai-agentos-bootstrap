@@ -1,0 +1,24 @@
+---
+# tool-goose - configure goose and render its config.
+# NOTE: goose install is not automated yet (no stable one-liner / AUR package).
+# Enable it in ai-tools.list only after installing goose manually, or add an
+# installer below. Config is rendered regardless.
+- name: ensure goose config directory
+  ansible.builtin.file:
+    path: "{{ agent_home }}/.config/goose"
+    state: directory
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
+
+- name: render goose config
+  ansible.builtin.template:
+    src: "{{ ai_config_dir }}/goose/config.yaml.j2"
+    dest: "{{ agent_home }}/.config/goose/config.yaml"
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
+
+- name: remind that goose install is manual for now
+  ansible.builtin.debug:
+    msg: "goose is configured but not installed. See ansible/roles/ai/tasks/tool-goose.yml."

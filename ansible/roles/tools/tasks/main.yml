@@ -1,18 +1,35 @@
 ---
-# tools role - 一般ツールを vars/tools.list から pacman で導入する
-# tools.list はユーザーが編集する主なファイルの 1 つ。
-
+# tools - general packages from vars/tools.list
+# 'aur:' prefix routes a package to yay; everything else uses pacman.
 - name: read tools.list
   ansible.builtin.set_fact:
-    tools_list: >-
+    tools_all: >-
       {{ lookup('file', playbook_dir ~ '/vars/tools.list').splitlines()
          | select('match', '^\s*[^#]')
+         | map('trim')
          | list }}
 
-- name: install tools (pacman)
-  ansible.builtin.pacman:
-    name: "{{ tools_list }}"
-    state: present
+- name: split pacman vs aur packages
+  ansible.builtin.set_fact:
+    tools_pacman: "{{ tools_all | reject('match', '^aur:') | list }}"
+    tools_aur: "{{ tools_all | select('match', '^aur:') | map('regex_replace', '^aur:', '') | list }}"
 
-# TODO(M3): pacman に存在しない AUR パッケージの yay による導入に分割する
-# TODO(M3): インストール後の設定 (dotfiles / service) を実装
+- name: install pacman tools
+  ansible.builtin.pacman:
+    name: "{{ tools_pacman }}"
+    state: present
+  when: tools_pacman | length > 0
+
+- name: install aur tools via yay
+  ansible.builtin.command: yay -S --needed --noconfirm {{ item | quote }}
+  loop: "{{ tools_aur }}"
+  register: aur_install
+  changed_when: "'there is nothing to do' not in aur_install.stdout"
+  when: tools_aur | length > 0
+
+- name: enable docker service
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+  when: "'docker' in tools_pacman"

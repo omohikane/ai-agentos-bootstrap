@@ -1,0 +1,22 @@
+---
+# vars/main.yml - playbook-level variables
+# Repository URL is centralized here (and in cloud-init/user-data.example.yml)
+# so that renaming/cloning to a new repo is a one-line change.
+repo_url: ""
+
+# OS basics
+hostname: ai-agent-vm
+timezone: UTC
+locale: en_US.UTF-8
+lang: en_US.UTF-8
+
+# Real login user (the user that becomes root via passwordless sudo).
+# Override with: ansible-playbook ... --extra-vars agent_user=myuser
+agent_user: "{{ ansible_env.SUDO_USER | default('ai') }}"
+agent_home: "/home/{{ agent_user }}"
+
+# Per-agent config templates live under this directory (relative to playbook)
+ai_config_dir: "{{ playbook_dir }}/config"
+
+# Project checkout location on the VM
+project_dir: /opt/ai-agentos-bootstrap

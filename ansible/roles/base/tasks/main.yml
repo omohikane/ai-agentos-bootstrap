@@ -1,6 +1,37 @@
 ---
-# base role - 基本設定 (hostname / user / ssh / tz / locale)
-# 実装予定 (M3)
-- name: base role not yet implemented
-  ansible.builtin.debug:
-    msg: "TODO(M3): base role"
+# base - OS basics and project checkout
+- name: set hostname
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+
+- name: set timezone
+  ansible.builtin.timezone:
+    name: "{{ timezone }}"
+
+- name: enable and start systemd-timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    enabled: true
+    state: started
+
+- name: ensure locale uncommented in /etc/locale.gen
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: "^#?{{ locale | regex_escape }}"
+    line: "{{ locale }}"
+
+- name: generate locales
+  ansible.builtin.command: locale-gen
+  changed_when: false
+
+- name: set system locale
+  ansible.builtin.copy:
+    dest: /etc/locale.conf
+    content: "LANG={{ lang }}\n"
+
+- name: ensure project checkout (if repo_url is set)
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ project_dir }}"
+    version: main
+  when: repo_url | length > 0

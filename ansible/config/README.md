@@ -1,21 +1,22 @@
 # ansible/config/
 
-ここに各 AI agent ツール専用の dotfiles を置きます。
+Per-AI-agent dotfile templates.
 
-`ansible/config/<tool>/` 内のファイルは、ai role (M3 実装予定) によって
-ホームディレクトリの `~/.config/<tool>/` へ同期されます。
+The `ai` role (M3) generates `~/.config/<tool>/` files from
+`ansible/config/<tool>/` Jinja2 templates. Master settings are kept in this
+repository and rendered per agent.
 
-## 予定
+## Planned
 
 ```
 config/
 ├── opencode/
-│   └── opencode.json        … opencode の設定
+│   └── opencode.conf.j2     … opencode configuration
 ├── goose/
 │   └── ...
 └── codex/
     └── ...
 ```
 
-ツールを追加する場合は、`ansible/vars/ai-tools.list` に追加し、
-`ansible/config/<tool>/` に設定ファイルを用意してください。
+To add a tool: add it to `ansible/vars/ai-tools.list` and provide a renderable
+template under `ansible/config/<tool>/`.
