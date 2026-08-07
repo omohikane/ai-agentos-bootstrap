@@ -1,8 +1,15 @@
 ---
 # base - OS basics and project checkout
-- name: set hostname
-  ansible.builtin.hostname:
-    name: "{{ hostname }}"
+# arch hostname module does not support Arch Linux; use /etc/hostname + hostnamectl.
+- name: ensure /etc/hostname
+  ansible.builtin.copy:
+    dest: /etc/hostname
+    content: "{{ hostname }}\n"
+
+- name: set running hostname (systemd hosts only)
+  ansible.builtin.command: hostnamectl set-hostname {{ hostname }}
+  changed_when: false
+  when: systemd_running
 
 - name: set timezone (only where systemd runs timedatectl)
   ansible.builtin.command: timedatectl set-timezone {{ timezone }}

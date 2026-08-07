@@ -19,6 +19,7 @@ jobs:
       - name: ansible + yaml syntax check
         run: |
           python3 -m pip install --quiet ansible-core
+          ansible-galaxy collection install --quiet community.general
           ansible-playbook --syntax-check -i 'localhost,' ansible/site.yml
           for f in $(find ansible -name '*.yml'); do python3 -c "import yaml,sys; yaml.safe_load(open('$f'))"; done
 
