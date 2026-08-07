@@ -17,6 +17,8 @@ lang: en_US.UTF-8
 
 # Per-user settings
 # git identity written to /etc/gitconfig (system-wide). Override per deploy.
+# Set these to YOUR GitHub account name/email so commits are attributed to
+# you — commits in agent repos use this identity.
 git_user_name: "AI Agent"
 git_user_email: "ai-agent@localhost"
 
