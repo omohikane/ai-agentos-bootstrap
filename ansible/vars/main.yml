@@ -1,5 +1,10 @@
 ---
 # vars/main.yml - playbook-level variables
+# ****************************************************************************
+# * USER EDIT THIS - hostname / timezone / git identity / default model.     *
+# * Apply with: make provision                                               *
+# ****************************************************************************
+
 # Repository URL is centralized here (and in cloud-init/user-data.example.yml)
 # so that renaming/cloning to a new repo is a one-line change.
 repo_url: ""
@@ -9,6 +14,11 @@ hostname: ai-agent-vm
 timezone: UTC
 locale: en_US.UTF-8
 lang: en_US.UTF-8
+
+# Per-user settings
+# git identity written to /etc/gitconfig (system-wide). Override per deploy.
+git_user_name: "AI Agent"
+git_user_email: "ai-agent@localhost"
 
 # Real login user (the user that becomes root via passwordless sudo).
 # Override with: ansible-playbook ... --extra-vars agent_user=myuser
@@ -20,6 +30,9 @@ ai_config_dir: "{{ playbook_dir }}/config"
 
 # Default agent used by the ai-agent systemd service (Phase 2)
 ai_agent_default: opencode
+
+# opencode model; empty = rely on provider/env (see ~/.env)
+opencode_model: ""
 
 # Project checkout location on the VM
 project_dir: /opt/ai-agentos-bootstrap

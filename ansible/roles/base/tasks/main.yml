@@ -35,10 +35,17 @@
   ansible.builtin.command: locale-gen
   changed_when: false
 
-- name: set system locale
+- name: ensure system locale
   ansible.builtin.copy:
     dest: /etc/locale.conf
     content: "LANG={{ lang }}\n"
+
+# --- per-user settings (render templates owned by the agent user) -----------
+- name: git configuration
+  ansible.builtin.include_tasks: git.yml
+
+- name: shell dotfiles
+  ansible.builtin.include_tasks: shell.yml
 
 - name: ensure project checkout (if repo_url is set)
   ansible.builtin.git:

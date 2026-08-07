@@ -1,0 +1,8 @@
+---
+# git - system-level git config (/etc/gitconfig, applies to every user on this VM).
+# Values come from vars/git.yml-style vars in vars/main.yml.
+- name: render global git config
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: /etc/gitconfig
+    mode: "0644"
