@@ -1,0 +1,29 @@
+---
+# agent-guide - deploy the autonomous coding guide (AGENTS.md + skills) into the
+# agent user's global opencode config so every opencode session picks it up.
+# Source: opencode-guide/ in the repository root.
+- name: ensure agent opencode config directory
+  ansible.builtin.file:
+    path: "{{ agent_home }}/.config/opencode/skills"
+    state: directory
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
+
+- name: deploy AGENTS.md to agent global opencode config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../opencode-guide/AGENTS.md"
+    dest: "{{ agent_home }}/.config/opencode/AGENTS.md"
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+    mode: "0644"
+  become: true
+
+- name: deploy skills to agent global opencode config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../opencode-guide/skills/"
+    dest: "{{ agent_home }}/.config/opencode/skills/"
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+    mode: "0644"
+  become: true

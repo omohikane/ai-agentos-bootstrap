@@ -26,6 +26,9 @@
     dest: /etc/systemd/system/ai-agent.service
   when: systemd_running
 
+- name: deploy autonomous coding guide into agent opencode config
+  ansible.builtin.include_tasks: agent-guide.yml
+
 # --- per-tool install + config ---------------------------------------------
 - name: install and configure selected tools
   ansible.builtin.include_tasks: "tool-{{ item }}.yml"
