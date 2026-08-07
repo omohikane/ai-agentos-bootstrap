@@ -47,6 +47,9 @@
 - name: shell dotfiles
   ansible.builtin.include_tasks: shell.yml
 
+- name: gh (GitHub CLI) config
+  ansible.builtin.include_tasks: github.yml
+
 - name: ensure project checkout (if repo_url is set)
   ansible.builtin.git:
     repo: "{{ repo_url }}"

@@ -1,0 +1,11 @@
+# gh (GitHub CLI) per-user config, rendered by the base role.
+# Auth comes from GH_TOKEN / GITHUB_TOKEN in ~/.env (set by cloud-init).
+# Git transport stays SSH-only (git_protocol: ssh), matching the repo design.
+git_protocol: ssh
+prompt: enabled
+version: "1"
+aliases:
+  co: pr checkout
+  br: repo view
+  st: repo status
+  cl: pr create --fill

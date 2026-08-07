@@ -1,0 +1,21 @@
+---
+# github - render per-user gh (GitHub CLI) config.
+# Install: github-cli (Arch extra) is in vars/tools.list.
+# Auth: gh CLI auto-reads GH_TOKEN / GITHUB_TOKEN from ~/.env (short-lived,
+# injected by cloud-init) — no token is stored on disk by this role.
+- name: ensure gh config directory
+  ansible.builtin.file:
+    path: "{{ agent_home }}/.config/gh"
+    state: directory
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
+
+- name: render gh config
+  ansible.builtin.template:
+    src: gh-config.yml.j2
+    dest: "{{ agent_home }}/.config/gh/config.yml"
+    mode: "0644"
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
