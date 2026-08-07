@@ -2,7 +2,7 @@
 # vars/main.yml - playbook-level variables
 # ****************************************************************************
 # * USER EDIT THIS - hostname / timezone / git identity / default model.     *
-# * Apply with: make provision                                               *
+# * Apply with: make provision. Docs: docs/user-edits.md                     *
 # ****************************************************************************
 
 # Repository URL is centralized here (and in cloud-init/user-data.example.yml)

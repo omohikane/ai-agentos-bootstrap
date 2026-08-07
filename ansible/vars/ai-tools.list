@@ -5,6 +5,7 @@
 # * Install method preference: yay (AUR) default; official installer where
 # *                          clearly preferred.
 # * Apply with: make provision
+# * Docs: docs/user-edits.md
 # ****************************************************************************
 
 opencode

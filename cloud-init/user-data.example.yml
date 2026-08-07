@@ -5,6 +5,7 @@
 #   - CHANGE_ME_PUBKEY    ... your SSH public key (key-only login)
 #   - REPO_URL            ... this repository (change in ONE place)
 #   - write_files/.env    ... secrets, short-lived tokens (see ansible/secrets.env.example)
+# Docs: docs/user-edits.md
 # ****************************************************************************
 #
 # First boot: creates the user, injects .env, clones the repo, runs

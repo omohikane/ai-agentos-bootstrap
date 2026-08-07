@@ -4,6 +4,7 @@
 # * General packages for this VM, one per line. '#' starts a comment.
 # * Installed with pacman. Prefix 'aur:' for AUR-only packages (via yay).
 # * Apply with: make provision
+# * Jump back to docs: ../docs/user-edits.md
 # ****************************************************************************
 
 git

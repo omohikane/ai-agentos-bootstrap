@@ -54,6 +54,13 @@ template, installs a minimal core toolchain with `bootstrap.sh`, then applies
 
 See `docs/usage.md` and `docs/rebuild.md` for details.
 
+## Where do I edit?
+
+Your only edits are a few files. **[docs/user-edits.md](docs/user-edits.md)** is
+the index that links to each of them (and each file links back). The short
+version: `ansible/vars/tools.list`, `ansible/vars/ai-tools.list`,
+`ansible/vars/main.yml`, and `cloud-init/user-data.example.yml`.
+
 ## Status
 
 - [x] M0 skeleton (repository layout)
