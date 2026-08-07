@@ -1,7 +1,10 @@
 # ansible/vars/tools.list
-# General packages, one per line. '#' starts a comment.
-# Installed with pacman. Prefix 'aur:' for AUR-only packages (installed via yay).
-# Editing this file is one of the user's main tasks.
+# ****************************************************************************
+# * USER EDIT FILE - the main file you edit in this project.
+# * General packages for this VM, one per line. '#' starts a comment.
+# * Installed with pacman. Prefix 'aur:' for AUR-only packages (via yay).
+# * Apply with: make provision
+# ****************************************************************************
 
 git
 ripgrep

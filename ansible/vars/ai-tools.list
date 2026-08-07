@@ -1,11 +1,11 @@
 # ansible/vars/ai-tools.list
-# AI agent tools, toggled by commenting. '#' disables a line.
-# Each enabled tool is installed and given a config generated from
-# ansible/config/<tool>/ (M3).
-#
-# Install method preference:
-#   - default: yay (AUR)
-#   - use the official installer where that is clearly preferred
+# ****************************************************************************
+# * USER EDIT THIS - AI agent tools, toggled by commenting.
+# * Uncomment a line to enable that agent (installed + configured).
+# * Install method preference: yay (AUR) default; official installer where
+# *                          clearly preferred.
+# * Apply with: make provision
+# ****************************************************************************
 
 opencode
 # goose

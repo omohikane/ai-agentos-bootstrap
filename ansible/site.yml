@@ -22,3 +22,14 @@
     - role: tools
     - role: ai
     - role: security
+
+  post_tasks:
+    - name: list user-editable files
+      ansible.builtin.debug:
+        msg:
+          - "Files a user edits (repo: {{ project_dir }}):"
+          - "  ansible/vars/tools.list       # general packages (one per line)"
+          - "  ansible/vars/ai-tools.list    # AI agents to enable"
+          - "  ansible/vars/main.yml         # hostname, timezone, git identity, model"
+          - "  cloud-init/user-data.example.yml  # username, SSH key, .env"
+          - "  ansible/secrets.env.example   # -> ~/.env (short-lived tokens)"

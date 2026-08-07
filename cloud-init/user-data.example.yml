@@ -1,11 +1,11 @@
 #cloud-config
-# user-data example for the ai-agent VM template.
-#
-# Set these fields, then apply as cloud-init user-data in Proxmox / KVM:
-#   - CHANGE_ME_USERNAME        ... login user
-#   - CHANGE_ME_PUBKEY          ... SSH public key (key-only login, passwords off)
-#   - REPO_URL                  ... this repository (A1: change in ONE place)
-#   - .env contents             ... secrets, short-lived tokens (see ansible/secrets.env.example)
+# ****************************************************************************
+# USER EDIT THIS - per-VM config consumed by Proxmox / KVM after first boot.
+#   - CHANGE_ME_USERNAME ... login user
+#   - CHANGE_ME_PUBKEY    ... your SSH public key (key-only login)
+#   - REPO_URL            ... this repository (change in ONE place)
+#   - write_files/.env    ... secrets, short-lived tokens (see ansible/secrets.env.example)
+# ****************************************************************************
 #
 # First boot: creates the user, injects .env, clones the repo, runs
 # bootstrap.sh then make provision — ends in an agent-ready state.

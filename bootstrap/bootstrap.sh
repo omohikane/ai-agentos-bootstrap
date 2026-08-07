@@ -89,4 +89,12 @@ install_fnm
 setup_env
 install_toolchains
 
-log "bootstrap done. next: make provision"
+log "bootstrap done."
+log "files you edit in this project:"
+log "  - ansible/vars/tools.list      (general packages)"
+log "  - ansible/vars/ai-tools.list   (AI agent tools)"
+log "  - ansible/vars/main.yml        (hostname/git/timezone/model)"
+log "  - cloud-init/user-data.example.yml (username, SSH key, .env)"
+log "  - ansible/secrets.env.example  (-> ~/.env, short-lived tokens)"
+log "run 'make show-editable' anywhere in the repo for the full list."
+log "next: make provision"
