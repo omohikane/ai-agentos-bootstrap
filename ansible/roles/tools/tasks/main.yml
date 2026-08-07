@@ -27,9 +27,16 @@
   changed_when: "'there is nothing to do' not in aur_install.stdout"
   when: tools_aur | length > 0
 
-- name: enable docker service
+- name: enable docker service (systemd hosts only)
   ansible.builtin.systemd:
     name: docker
     enabled: true
     state: started
   when: systemd_running and 'docker' in tools_pacman
+
+- name: enable podman socket (systemd hosts only)
+  ansible.builtin.systemd:
+    name: podman.socket
+    enabled: true
+    state: started
+  when: systemd_running and 'podman' in tools_pacman

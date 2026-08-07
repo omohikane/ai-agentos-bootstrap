@@ -13,5 +13,6 @@ tmux
 neovim
 jq
 htop
-docker
+podman
+# docker            # optional: uncomment to use Docker instead of Podman
 github-cli
