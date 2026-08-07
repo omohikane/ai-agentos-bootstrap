@@ -1,0 +1,19 @@
+---
+# herdr - agent runtime (holds agent terminals open, survives disconnect,
+# reconnect from anywhere, SSH bridge). Install via official installer:
+#   curl -fsSL https://herdr.dev/install.sh | sh
+# AUR packages exist (herdr / herdr-bin) but are flagged out-of-date, so the
+# official installer is preferred (matches the repo installer policy).
+- name: check herdr binary
+  ansible.builtin.stat:
+    path: "{{ agent_home }}/.local/bin/herdr"
+  become: true
+  become_user: "{{ agent_user }}"
+  register: herdr_bin
+  changed_when: false
+
+- name: install herdr via official installer
+  ansible.builtin.command: bash -lc 'curl -fsSL https://herdr.dev/install.sh | sh'
+  become: true
+  become_user: "{{ agent_user }}"
+  when: not herdr_bin.stat.exists

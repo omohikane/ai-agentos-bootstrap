@@ -14,5 +14,6 @@ neovim
 jq
 htop
 podman
-# docker            # optional: uncomment to use Docker instead of Podman
+# tmux             # optional: replace/deprecate as agent ops moves to herdr
+# docker          # optional: uncomment to use Docker instead of Podman
 github-cli

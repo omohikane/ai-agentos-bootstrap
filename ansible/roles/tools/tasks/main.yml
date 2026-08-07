@@ -40,3 +40,7 @@
     enabled: true
     state: started
   when: systemd_running and 'podman' in tools_pacman
+
+# --- agent runtime (not a pacman/aur package, installed by official script) ---
+- name: install herdr (agent runtime)
+  ansible.builtin.include_tasks: tool-herdr.yml
