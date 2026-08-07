@@ -39,7 +39,8 @@ install_yay() {
     return
   fi
   log "build yay from AUR"
-  local tmpdir builder
+  local builder
+  # global (not local): referenced by the EXIT trap after the function returns
   tmpdir="$(mktemp -d)"
   trap 'rm -rf "$tmpdir"' EXIT
   git clone https://aur.archlinux.org/yay.git "$tmpdir/yay"
