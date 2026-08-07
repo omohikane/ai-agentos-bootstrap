@@ -1,10 +1,12 @@
 ---
 # base - OS basics and project checkout
 # arch hostname module does not support Arch Linux; use /etc/hostname + hostnamectl.
+# Both are skipped in containers (/etc/hostname is a bind mount -> EBUSY on rename).
 - name: ensure /etc/hostname
   ansible.builtin.copy:
     dest: /etc/hostname
     content: "{{ hostname }}\n"
+  when: systemd_running
 
 - name: set running hostname (systemd hosts only)
   ansible.builtin.command: hostnamectl set-hostname {{ hostname }}
