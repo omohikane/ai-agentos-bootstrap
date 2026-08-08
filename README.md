@@ -43,50 +43,90 @@ template, installs a minimal core toolchain with `bootstrap.sh`, then applies
 └── docs/         … architecture / usage
 ```
 
-## Quickstart
+## Quickstart — on a vanilla VM you create yourself
 
-1. **Prepare the template** — on an Arch host (the repo checkout), build the
-   cloud-init qcow2:
+Most setups start with any minimal Arch Linux VM (KVM / Proxmox / a cloud
+provider) rather than our cloud-init template. cloud-init isn't needed for this
+path — you make the VM, then pull this repo in over SSH.
+
+1. **Create the VM** — boot a minimal Arch Linux image with a normal login user
+   that can `sudo`, and reach it over SSH (initial access is whatever the
+   provider/install image gives you).
+
+2. **Clone this repo** on the VM (if `git` isn't pre-installed:
+   `sudo pacman -S --needed git` first; give your user write access to `/opt`):
 
    ```
-   sudo ./cloud-init/build-image.sh
+   sudo chown "$USER" /opt
+   git clone https://github.com/<owner>/<repo>.git /opt/ai-agentos-bootstrap
    ```
 
-2. **Import & attach** — import the qcow2 into Proxmox / KVM as a template, then
-   attach the cloud-init files:
-   - `cloud-init/user-data.example.yml` — login username, **SSH key**,
-     and the `.env` secrets block (short-lived tokens, see `ansible/secrets.env.example`)
-   - `cloud-init/meta-data.example.yml` — hostname
+3. **Set your user-level values** — see the index in [docs/user-edits.md](docs/user-edits.md):
+   - `ansible/vars/main.yml` — git identity, hostname, timezone
+   - `~/.env` — copy `ansible/secrets.env.example` and fill short-lived tokens
+   - `ansible/vars/tools.list` / `ai-tools.list` — what to install
 
-3. **Start the VM** — first boot runs cloud-init → `bootstrap.sh` (core
-   toolchain) → `make provision` (Ansible self-apply) and ends agent-ready,
-   with no manual login required.
+4. **Install the core toolchain** (git, ansible, yay, uv, rustup, fnm, openssh…):
 
-4. **Log in over SSH** (see `docs/usage.md` for a ready `~/.ssh/config` alias):
-   ```bash
-   ssh ai
-   make ssh VM_HOST=ai      # same thing from a repo checkout
+   ```
+   cd /opt/ai-agentos-bootstrap && ./bootstrap/bootstrap.sh
    ```
 
-5. **Run an agent**:
-   ```bash
+5. **Apply the config**:
+
+   ```
+   make provision
+   ```
+
+   base → tools → ai → security, fully idempotent. Repeat anytime after editing
+   the files above.
+
+6. **Make sure your SSH key is inside before step 5**. Provisioning makes
+   sshd key-only and restricted to the agent user, so pass your public key in
+   if the VM was never given one:
+
+   ```
+   mkdir -p ~/.ssh && chmod 700 ~/.ssh
+   echo '<your-public-key>' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
+   ```
+
+7. **Run an agent**:
+
+   ```
    run-agent opencode --auto "your first task"
    run-agent codex           # any tool enabled in ai-tools.list
    ```
+
    or enable the managed service (`systemctl start ai-agent`) for a persistent
    session.
 
 ### Running a single stage manually
 
-If first boot's auto-run didn't finish (or you changed a stage on an existing
-VM), each stage can be run by itself:
+If you only change one stage (or a first boot auto-run didn't finish), each can
+be run on its own:
 
 ```
-# on the VM, in a clone of this repo:
-./bootstrap/bootstrap.sh          # core toolchain only (git, ansible, uv, rustup, fnm, yay, …)
-make provision                    # Ansible self-apply only (base → tools → ai → security)
+cd /opt/ai-agentos-bootstrap
+./bootstrap/bootstrap.sh          # core toolchain only
+make provision                    # Ansible self-apply only
 make packages                     # packages only, on an already-built VM
 ```
+
+## Quickstart — from our cloud-init template (no manual SSH steps)
+
+For fully hands-off, repeatable VMs the repo includes a cloud-init template.
+First boot runs cloud-init → `bootstrap.sh` → `make provision` automatically:
+
+1. Build the template on an Arch host:
+
+   ```
+   sudo ./cloud-init/build-image.sh
+   ```
+
+2. Import the qcow2 into Proxmox / KVM and attach `cloud-init/user-data.example.yml`
+   (username, SSH key, `.env`) and `cloud-init/meta-data.example.yml`.
+
+3. Start the VM. It ends agent-ready with no manual login.
 
 For day-to-day usage, the rebuild recipe (treat the VM as disposable), and the
 list of files you edit, see `docs/usage.md`, `docs/rebuild.md`, and
