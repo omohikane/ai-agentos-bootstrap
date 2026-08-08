@@ -76,6 +76,18 @@ template, installs a minimal core toolchain with `bootstrap.sh`, then applies
    or enable the managed service (`systemctl start ai-agent`) for a persistent
    session.
 
+### Running a single stage manually
+
+If first boot's auto-run didn't finish (or you changed a stage on an existing
+VM), each stage can be run by itself:
+
+```
+# on the VM, in a clone of this repo:
+./bootstrap/bootstrap.sh          # core toolchain only (git, ansible, uv, rustup, fnm, yay, …)
+make provision                    # Ansible self-apply only (base → tools → ai → security)
+make packages                     # packages only, on an already-built VM
+```
+
 For day-to-day usage, the rebuild recipe (treat the VM as disposable), and the
 list of files you edit, see `docs/usage.md`, `docs/rebuild.md`, and
 `docs/user-edits.md`.
