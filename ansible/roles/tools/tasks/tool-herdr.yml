@@ -4,18 +4,21 @@
 #   curl -fsSL https://herdr.dev/install.sh | sh
 # AUR packages exist (herdr / herdr-bin) but are flagged out-of-date, so the
 # official installer is preferred (matches the repo installer policy).
-# Idempotency uses the same command -v check as the other agent tools; the
-# install dir is pinned so a re-run never treats it as missing.
-- name: check herdr availability
-  ansible.builtin.command: bash -lc 'eval "$(fnm env --shell bash) 2>/dev/null"; command -v herdr'
+#
+# Detection uses the absolute pinned path (stat), NOT `command -v`: the login
+# shell's PATH does not reliably include ~/.local/bin under become, and the
+# same pin (HERDR_INSTALL_DIR) keeps the install location independent of
+# $HOME, so idempotency holds wherever the play runs.
+- name: check herdr binary
+  ansible.builtin.stat:
+    path: "{{ agent_home }}/.local/bin/herdr"
   become: true
   become_user: "{{ agent_user }}"
-  register: herdr_check
+  register: herdr_bin
   changed_when: false
-  failed_when: false
 
 - name: install herdr via official installer
   ansible.builtin.command: bash -lc 'export HERDR_INSTALL_DIR={{ agent_home }}/.local/bin && curl -fsSL https://herdr.dev/install.sh | sh'
   become: true
   become_user: "{{ agent_user }}"
-  when: herdr_check.rc != 0
+  when: not herdr_bin.stat.exists
