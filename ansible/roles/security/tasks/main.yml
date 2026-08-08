@@ -30,6 +30,35 @@
     line: "PermitRootLogin prohibit-password"
   notify: restart sshd
 
+# --- session keepalive: long agent jobs should not get dropped mid-run -------
+- name: send keepalive probes to idle clients
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveInterval"
+    line: "ClientAliveInterval 120"
+  notify: restart sshd
+
+- name: tolerate a few lost probes before dropping
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveCountMax"
+    line: "ClientAliveCountMax 5"
+  notify: restart sshd
+
+- name: keep TCP connections alive through NATs
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?TCPKeepAlive"
+    line: "TCPKeepAlive yes"
+  notify: restart sshd
+
+- name: restrict ssh logins to the agent user
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?AllowUsers"
+    line: "AllowUsers {{ agent_user }}"
+  notify: restart sshd
+
 - name: restart the agent user's ssh-agent requirement
   ansible.builtin.debug:
     msg: "SSH configuration applied. Provide the public key in user-data (ssh_authorized_keys) before first boot."

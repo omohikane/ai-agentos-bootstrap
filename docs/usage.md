@@ -77,6 +77,39 @@ opencode --auto "<task>"
 or claude code / codex. Agent starter scripts (systemd service or one-shot) are
 provided in Phase 2.
 
+## Connecting over SSH (you, from your laptop)
+
+The VM is built to be reached over SSH and treated as disposable. It is
+configured for key-only login, and `make provision` adds keepalive and restricts
+logins to the agent user, so long agent jobs survive network moves.
+
+One-time client convenience: add an alias in `~/.ssh/config` on **your laptop**:
+
+```
+Host ai
+    HostName <vm-ip-or-name>
+    User <your-agent-login-user>
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 60
+    IdentitiesOnly yes
+    ControlMaster auto
+    ControlPath ~/.ssh/ctrl:%h:%p
+    ControlPersist 5m
+```
+
+`ServerAliveInterval` keeps the session alive across quiet periods; `Control*`
+reuse the first connection, so repeated `make` / agent runs reconnect instantly.
+
+Then either connect directly or through the Makefile:
+
+```
+ssh ai
+make ssh VM_HOST=ai
+```
+
+Agent terminals can also be (re)claimed from anywhere via `herdr` (installed on
+the VM) — it survives client drops entirely.
+
 ## Secrets
 
 `ansible/secrets.env.example` is the template for a `.env` file that cloud-init
