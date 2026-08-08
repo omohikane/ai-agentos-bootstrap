@@ -45,14 +45,40 @@ template, installs a minimal core toolchain with `bootstrap.sh`, then applies
 
 ## Quickstart
 
-1. Build the template on an Arch host: `sudo ./cloud-init/build-image.sh`
-2. Import the qcow2 into Proxmox / KVM and attach `cloud-init/user-data.example.yml`
-   (username, SSH key, `.env`) + `cloud-init/meta-data.example.yml`.
-3. Start the VM. First boot runs cloud-init → `bootstrap.sh` → `make provision`.
-4. Log in with the SSH key and run an agent, e.g.:
-   `run-agent opencode --auto "your task"` (or `systemctl start ai-agent`).
+1. **Prepare the template** — on an Arch host (the repo checkout), build the
+   cloud-init qcow2:
 
-See `docs/usage.md` and `docs/rebuild.md` for details.
+   ```
+   sudo ./cloud-init/build-image.sh
+   ```
+
+2. **Import & attach** — import the qcow2 into Proxmox / KVM as a template, then
+   attach the cloud-init files:
+   - `cloud-init/user-data.example.yml` — login username, **SSH key**,
+     and the `.env` secrets block (short-lived tokens, see `ansible/secrets.env.example`)
+   - `cloud-init/meta-data.example.yml` — hostname
+
+3. **Start the VM** — first boot runs cloud-init → `bootstrap.sh` (core
+   toolchain) → `make provision` (Ansible self-apply) and ends agent-ready,
+   with no manual login required.
+
+4. **Log in over SSH** (see `docs/usage.md` for a ready `~/.ssh/config` alias):
+   ```bash
+   ssh ai
+   make ssh VM_HOST=ai      # same thing from a repo checkout
+   ```
+
+5. **Run an agent**:
+   ```bash
+   run-agent opencode --auto "your first task"
+   run-agent codex           # any tool enabled in ai-tools.list
+   ```
+   or enable the managed service (`systemctl start ai-agent`) for a persistent
+   session.
+
+For day-to-day usage, the rebuild recipe (treat the VM as disposable), and the
+list of files you edit, see `docs/usage.md`, `docs/rebuild.md`, and
+`docs/user-edits.md`.
 
 ## Where do I edit?
 
