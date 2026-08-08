@@ -19,3 +19,42 @@
     owner: "{{ agent_user }}"
     group: "{{ agent_user }}"
   become: true
+
+# --- SSH deploy key: lets the VM push to GitHub on its own --------------
+# State managed here is the KEY + git config. Registering the key with GitHub
+# is a one-time, externally-visible step (it needs your GitHub account via gh),
+# so provision prints the command and the public key instead of doing it.
+- name: ensure ssh directory
+  ansible.builtin.file:
+    path: "{{ agent_home }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ agent_user }}"
+    group: "{{ agent_user }}"
+  become: true
+
+- name: generate github ssh deploy key if missing
+  ansible.builtin.command: ssh-keygen -t ed25519 -N "" -f {{ agent_home }}/.ssh/github_deploy -C "{{ hostname }} deploy key"
+  become: true
+  become_user: "{{ agent_user }}"
+  args:
+    creates: "{{ agent_home }}/.ssh/github_deploy"
+
+- name: read deploy public key
+  ansible.builtin.slurp:
+    path: "{{ agent_home }}/.ssh/github_deploy.pub"
+  become: true
+  become_user: "{{ agent_user }}"
+  register: github_deploy_pub
+
+- name: point git at the deploy key (user-global)
+  ansible.builtin.git_config:
+    name: core.sshCommand
+    scope: global
+    value: "ssh -i {{ agent_home }}/.ssh/github_deploy -o IdentitiesOnly=yes"
+    user: "{{ agent_user }}"
+  become: true
+
+- name: remind to register the deploy key on GitHub (one-time)
+  ansible.builtin.debug:
+    msg: "Register this public key as a repo deploy key (allow write):\n  gh repo deploy-key add <key-file> --repo owner/repo --allow-write --title '{{ hostname }}'\nkey:\n{{ github_deploy_pub['content'] | b64decode }}"

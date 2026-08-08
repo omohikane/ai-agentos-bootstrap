@@ -1,2 +1,5 @@
 .env
 *.local
+
+# local-only verification notes (contains private LAN IPs)
+docs/verification-log.md
