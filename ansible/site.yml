@@ -19,9 +19,13 @@
 
   roles:
     - role: base
+      tags: base
     - role: tools
+      tags: tools
     - role: ai
+      tags: ai
     - role: security
+      tags: security
 
   post_tasks:
     - name: list user-editable files

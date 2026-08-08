@@ -110,6 +110,22 @@ make ssh VM_HOST=ai
 Agent terminals can also be (re)claimed from anywhere via `herdr` (installed on
 the VM) — it survives client drops entirely.
 
+## Adding packages to an already built VM
+
+The VM is up, provisioned, and you just want one more OS package — no rebuild,
+no full re-provision.
+
+1. Add/remove a line in `ansible/vars/tools.list` (or an agent in `ai-tools.list`).
+2. Apply on the VM:
+
+   ```
+   make packages    # packages only (tools role) — fast
+   make provision   # everything, fully idempotent — safe anytime
+   ```
+
+`make packages` runs only the `tools` role via the site tag, so agent config and
+security settings are left untouched.
+
 ## Secrets
 
 `ansible/secrets.env.example` is the template for a `.env` file that cloud-init
