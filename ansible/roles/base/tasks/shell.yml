@@ -7,7 +7,7 @@
     owner: "{{ agent_user }}"
     group: "{{ agent_user }}"
     mode: "0644"
-    marker: "# >>> ai-agentos managed block >>>"
+    marker: "# >>> ai-agentos managed block {mark} >>>"
     block: |
       # colored output + sensible history
       alias ls='ls --color=auto'
@@ -26,6 +26,6 @@
     owner: "{{ agent_user }}"
     group: "{{ agent_user }}"
     mode: "0644"
-    marker: "# ai-agent-osm bash_profile block"
+    marker: "# >>> ai-agentos bash_profile {mark} >>>"
     block: |
       if [ -f "$HOME/.bashrc" ]; then . "$HOME/.bashrc"; fi
